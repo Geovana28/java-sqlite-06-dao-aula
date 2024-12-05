@@ -1,0 +1,41 @@
+package com.exemplo.dao;
+
+import com.exemplo.model.Fornecedor;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FornecedorDAO {
+    private Connection connection;
+
+    public FornecedorDAO(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void inserir(Fornecedor fornecedor) throws SQLException {
+        String sql = "INSERT INTO Fornecedor (nome, telefone, endereco) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, fornecedor.getNome());
+            stmt.setString(2, fornecedor.getTelefone());
+            stmt.setString(3, fornecedor.getEndereco());
+            stmt.executeUpdate();
+        }
+    }
+
+    public List<Fornecedor> listar() throws SQLException {
+        String sql = "SELECT * FROM Fornecedor";
+        List<Fornecedor> fornecedores = new ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Fornecedor fornecedor = new Fornecedor();
+                fornecedor.setId(rs.getInt("id"));
+                fornecedor.setNome(rs.getString("nome"));
+                fornecedor.setTelefone(rs.getString("telefone"));
+                fornecedor.setEndereco(rs.getString("endereco"));
+                fornecedores.add(fornecedor);
+            }
+        }
+        return fornecedores;
+    }
+}

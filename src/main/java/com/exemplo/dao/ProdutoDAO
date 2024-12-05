@@ -1,0 +1,43 @@
+package com.exemplo.dao;
+
+import com.exemplo.model.Produto;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProdutoDAO {
+    private Connection connection;
+
+    public ProdutoDAO(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void inserir(Produto produto) throws SQLException {
+        String sql = "INSERT INTO Produto (id_fornecedor, nome, preco, validade) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, produto.getIdFornecedor());
+            stmt.setString(2, produto.getNome());
+            stmt.setDouble(3, produto.getPreco());
+            stmt.setString(4, produto.getValidade());
+            stmt.executeUpdate();
+        }
+    }
+
+    public List<Produto> listar() throws SQLException {
+        String sql = "SELECT * FROM Produto";
+        List<Produto> produtos = new ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Produto produto = new Produto();
+                produto.setId(rs.getInt("id"));
+                produto.setIdFornecedor(rs.getInt("id_fornecedor"));
+                produto.setNome(rs.getString("nome"));
+                produto.setPreco(rs.getDouble("preco"));
+                produto.setValidade(rs.getString("validade"));
+                produtos.add(produto);
+            }
+        }
+        return produtos;
+    }
+}

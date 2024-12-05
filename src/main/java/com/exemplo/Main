@@ -1,0 +1,46 @@
+ package com.exemplo;
+
+import com.exemplo.dao.FornecedorDAO;
+import com.exemplo.dao.ProdutoDAO;
+import com.exemplo.model.Fornecedor;
+import com.exemplo.model.Produto;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            // Conectar ao banco de dados SQLite
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:meu-banco.db");
+
+            // Criar DAO
+            FornecedorDAO fornecedorDAO = new FornecedorDAO(connection);
+            ProdutoDAO produtoDAO = new ProdutoDAO(connection);
+
+            // Inserir Fornecedor
+            Fornecedor fornecedor = new Fornecedor();
+            fornecedor.setNome("Fornecedor A");
+            fornecedor.setTelefone("123456789");
+            fornecedor.setEndereco("Rua 123, Cidade");
+            fornecedorDAO.inserir(fornecedor);
+
+            // Inserir Produto
+            Produto produto = new Produto();
+            produto.setIdFornecedor(1);  // Supondo que o id do fornecedor inserido é 1
+            produto.setNome("Produto A");
+            produto.setPreco(10.50);
+            produto.setValidade("2025-12-31");
+            produtoDAO.inserir(produto);
+
+            // Listar Fornecedores
+            fornecedorDAO.listar().forEach(f -> System.out.println(f.getNome()));
+
+            // Listar Produtos
+            produtoDAO.listar().forEach(p -> System.out.println(p.getNome()));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
